@@ -24,20 +24,20 @@ provider "google" {
 
 # GKE
 resource "google_container_cluster" "autopilot" {
-  name     = "${var.project_id}-auto"
-  location = var.region
+  name             = "${var.project_id}-auto"
+  location         = var.region
   enable_autopilot = true
 }
 
 module "gke_auth" {
-  source = "terraform-google-modules/kubernetes-engine/google//modules/auth"
+  source       = "terraform-google-modules/kubernetes-engine/google//modules/auth"
   depends_on   = [google_container_cluster.autopilot]
   project_id   = var.project_id
   location     = google_container_cluster.autopilot.location
   cluster_name = google_container_cluster.autopilot.name
 }
 resource "local_file" "kubeconfig" {
-  content  = module.gke_auth.kubeconfig_raw
-  filename = "kubeconfig-${var.project_id}-auto"
+  content         = module.gke_auth.kubeconfig_raw
+  filename        = "kubeconfig-${var.project_id}-auto"
   file_permission = "0600"
 }
